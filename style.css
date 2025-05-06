@@ -1,0 +1,267 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    direction: rtl; /* Right-to-left for Hebrew */
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 1em 0;
+    text-align: center;
+    border-bottom: 5px solid #0056b3;
+}
+
+header img#companyLogo {
+    max-height: 50px;
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+main {
+    padding: 15px;
+    max-width: 900px; /* Increased max-width for sidebar */
+    margin: 20px auto;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+section, aside {
+    background-color: #fff;
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+section h2, aside h3 {
+    color: #007bff;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+/* Price List Toggle */
+#priceListToggleSection select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+/* Layout for label and input side-by-side */
+#nurseVisitSection > div,
+#labTestsSection > div:nth-of-type(2), /* Second div in labTestsSection for discount */
+#summarySection > div {
+    display: flex;
+    align-items: center; /* Vertically align items in the middle */
+    gap: 10px; /* Space between label and input */
+    margin-bottom: 10px;
+}
+
+#nurseVisitSection > div label,
+#labTestsSection > div:nth-of-type(2) label,
+#summarySection > div label {
+    margin-bottom: 0; /* Remove default bottom margin for labels in flex container */
+    flex-shrink: 0; /* Prevent label from shrinking */
+}
+
+#nurseVisitSection > div input[type="number"],
+#labTestsSection > div:nth-of-type(2) input[type="number"],
+#summarySection > div input[type="number"] {
+    width: auto; /* Allow input to take necessary width */
+    flex-grow: 1; /* Allow input to grow and fill available space */
+    margin-bottom: 0; /* Remove default bottom margin for inputs in flex container */
+    max-width: 150px; /* Optional: constrain max width of discount inputs */
+}
+
+/* Specific for test search - keep it block for now or adjust if needed */
+#labTestsSection > div:first-of-type label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+#labTestsSection > div:first-of-type input[type="text"] {
+    width: calc(100% - 22px); /* Account for padding and border */
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+
+#testSuggestions {
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    position: absolute; /* For better positioning below search input */
+    width: calc(100% - 22px); /* Match search input width */
+    z-index: 1000; /* Ensure it's above other elements */
+}
+
+#testSuggestions ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#testSuggestions li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+#testSuggestions li:hover {
+    background-color: #f0f0f0;
+}
+
+#selectedTestsList {
+    list-style-type: none;
+    padding: 0;
+}
+
+#selectedTestsList li {
+    background-color: #e9ecef;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#selectedTestsList li button.remove-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+#selectedTestsList li button.remove-btn:hover {
+    background-color: #c82333;
+}
+
+/* Lab Tests Container and Details Sidebar */
+.lab-tests-container {
+    display: flex;
+    gap: 20px; /* Space between main lab tests section and sidebar */
+}
+
+#labTestsSection {
+    flex-grow: 1; /* Main content takes available space */
+}
+
+#testDetailsSection {
+    flex-basis: 300px; /* Initial width of the sidebar */
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+    background-color: #f9f9f9;
+}
+
+#testDetailsContent p {
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+#testDetailsContent strong {
+    color: #555;
+}
+
+span {
+    font-weight: bold;
+    color: #28a745;
+}
+
+#summarySection h3 span {
+    color: #dc3545; /* Emphasize final amount */
+    font-size: 1.2em;
+}
+
+#exportPdfButton {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 15px;
+    display: inline-block;
+}
+
+#exportPdfButton:hover {
+    background-color: #218838;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40;
+    color: white;
+    margin-top: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) { /* Adjusted breakpoint for sidebar */
+    .lab-tests-container {
+        flex-direction: column;
+    }
+
+    #testDetailsSection {
+        flex-basis: auto; /* Allow sidebar to take full width on small screens */
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.5em;
+    }
+
+    main {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    section, aside {
+        padding: 15px;
+    }
+
+    input[type="number"], input[type="text"],
+    #priceListToggleSection select {
+        padding: 8px;
+    }
+
+    #nurseVisitSection > div,
+    #labTestsSection > div:nth-of-type(2),
+    #summarySection > div {
+        flex-direction: column; /* Stack label and input vertically */
+        align-items: flex-start;
+    }
+
+    #nurseVisitSection > div input[type="number"],
+    #labTestsSection > div:nth-of-type(2) input[type="number"],
+    #summarySection > div input[type="number"] {
+        width: 100%; /* Full width for inputs on small screens */
+        max-width: none;
+    }
+}
+
