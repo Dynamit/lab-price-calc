@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחשבון מחירי מעבדה</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <img src="./assets/images/company_logo_new.png" alt="לוגו החברה" id="companyLogo">
+        <h1>מחשבון מחירי מעבדה</h1>
+    </header>
+
+    <main>
+        <section id="nurseVisitSection">
+            <h2>חבילת ביקור אחות</h2>
+            <p>כולל: ביקור אחות, ספירת דם (CBC), כימיה בדם (SMAC)</p>
+            <p>מחיר בסיס: <span id="nurseBasePrice">710</span> ש"ח</p>
+            <div>
+                <label for="nurseDiscount">הנחה (%):</label>
+                <input type="number" id="nurseDiscount" min="0" max="100" value="0">
+            </div>
+            <p>מחיר לאחר הנחה: <span id="nurseDiscountedPrice">710</span> ש"ח</p>
+        </section>
+
+        <section id="labTestsSection">
+            <h2>מחשבון בדיקות מעבדה</h2>
+            <div>
+                <label for="testSearch">הוסף בדיקה:</label>
+                <input type="text" id="testSearch" placeholder="חפש בדיקה...">
+                <div id="testSuggestions"></div>
+            </div>
+            <h3>בדיקות נבחרות:</h3>
+            <ul id="selectedTestsList"></ul>
+            <p>סכום ביניים לבדיקות: <span id="labTestsSubtotal">0</span> ש"ח</p>
+            <div>
+                <label for="labTestsDiscount">הנחה על בדיקות מעבדה (%):</label>
+                <input type="number" id="labTestsDiscount" min="0" max="100" value="0">
+            </div>
+            <p>סה"כ לבדיקות (לאחר הנחה): <span id="labTestsDiscountedTotal">0</span> ש"ח</p>
+        </section>
+
+        <section id="summarySection">
+            <h2>סיכום</h2>
+            <p>חבילת ביקור אחות (לאחר הנחה): <span id="summaryNursePrice">710</span> ש"ח</p>
+            <p>סה"כ בדיקות מעבדה (לאחר הנחה): <span id="summaryLabTestsPrice">0</span> ש"ח</p>
+            <p><strong>סה"כ כללי: <span id="grandTotal">710</span> ש"ח</strong></p>
+            <div>
+                <label for="grandTotalDiscount">הנחה על סה"כ כללי (%):</label>
+                <input type="number" id="grandTotalDiscount" min="0" max="100" value="0">
+            </div>
+            <h3>סכום סופי לתשלום: <span id="finalAmount">710</span> ש"ח</h3>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 שם החברה שלך</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
