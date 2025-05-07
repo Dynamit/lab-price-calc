@@ -1,0 +1,313 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    direction: rtl; /* Right-to-left for Hebrew */
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 1em 0;
+    text-align: center;
+    border-bottom: 5px solid #0056b3;
+}
+
+header img#companyLogo {
+    max-height: 100px; /* Increased from 50px */
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+main {
+    padding: 15px;
+    max-width: 900px; 
+    margin: 20px auto;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+section {
+    background-color: #fff;
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+section#labTestsSection {
+    border: none !important; 
+    box-shadow: none !important;
+    padding-top: 0; /* Try to reduce space if h2 border was issue */
+}
+
+/* Ensure the h2 inside labTestsSection doesn't create an unwanted top line if padding is 0 */
+section#labTestsSection > h2 {
+    margin-top: 20px; /* Add back some margin if section padding-top is 0 */
+}
+
+aside#testDetailsSection {
+    background-color: #f9f9f9;
+    margin-bottom: 20px; 
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    flex-basis: 300px;
+    flex-shrink: 0;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: 1px solid #ddd !important;
+    border-bottom: 1px solid #ddd !important;
+}
+
+.lab-tests-container {
+    display: flex;
+    gap: 20px; 
+    border: none !important;
+    box-shadow: none !important;
+}
+
+section h2, aside h3 {
+    color: #007bff;
+    padding-bottom: 10px;
+    margin-top: 0; /* Default, but can be overridden */
+    border-bottom: 2px solid #eee; 
+}
+
+/* Price List Toggle */
+#priceListToggleSection select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+/* Discount containers and buttons */
+.discount-toggle-btn {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.discount-toggle-btn:hover {
+    background-color: #5a6268;
+}
+
+.discount-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.discount-input-container.hidden {
+    display: none;
+}
+
+.discount-input-container label {
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.discount-input-container input[type="number"] {
+    width: auto;
+    flex-grow: 1;
+    margin-bottom: 0;
+    max-width: 100px;
+}
+
+/* Specific for test search input field */
+#labTestsSection > div:first-of-type label { 
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+#labTestsSection > div:first-of-type input[type="text"] { 
+    width: calc(100% - 22px); 
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#testSuggestions {
+    /* border: 1px solid #ccc; */ /* Border managed by .active class */
+    border: none;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    position: absolute;
+    width: calc(100% - 22px); /* Match input width */
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#testSuggestions.active {
+    border: 1px solid #ccc;
+}
+
+#testSuggestions ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#testSuggestions li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+#testSuggestions li:hover {
+    background-color: #f0f0f0;
+}
+
+#selectedTestsList {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px; /* Add some space above the list */
+}
+
+#selectedTestsList li {
+    background-color: #e9ecef;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#selectedTestsList li button.remove-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+#selectedTestsList li button.remove-btn:hover {
+    background-color: #c82333;
+}
+
+#testDetailsContent p {
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+#testDetailsContent strong {
+    color: #555;
+}
+
+span {
+    font-weight: bold;
+    color: #28a745;
+}
+
+#summarySection h3 span {
+    color: #dc3545;
+    font-size: 1.2em;
+}
+
+#exportPdfButton, #exportStaffPdfButton {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 15px;
+    display: inline-block;
+}
+
+#exportPdfButton:hover, #exportStaffPdfButton:hover {
+    background-color: #218838;
+}
+
+#exportStaffPdfButton {
+    background-color: #17a2b8; /* Different color for staff button */
+    margin-right: 10px; /* Space from other button if on same line */
+}
+
+#exportStaffPdfButton:hover {
+    background-color: #138496;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40;
+    color: white;
+    margin-top: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) { 
+    .lab-tests-container {
+        flex-direction: column;
+    }
+
+    aside#testDetailsSection {
+        flex-basis: auto; 
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.5em;
+    }
+
+    main {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    section, aside#testDetailsSection {
+        padding: 15px;
+    }
+
+    input[type="number"], input[type="text"],
+    #priceListToggleSection select {
+        padding: 8px;
+    }
+
+    .discount-input-container {
+        flex-direction: column; 
+        align-items: flex-start;
+    }
+
+    .discount-input-container input[type="number"] {
+        width: 100%; 
+        max-width: none;
+    }
+}
+
