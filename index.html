@@ -23,13 +23,7 @@
 
         <section id="nurseVisitSection">
             <h2>חבילת בסיס (ביקור אחות, ספירת דם, כימיה בדם)</h2>
-            <p>מחיר בסיס: <span id="nurseBasePrice">710</span> ש"ח</p>
-            <button id="toggleNurseDiscountBtn" class="discount-toggle-btn">הנחה על חבילת הבסיס</button>
-            <div id="nurseDiscountContainer" class="discount-input-container hidden">
-                <label for="nurseDiscount">% הנחה:</label>
-                <input type="number" id="nurseDiscount" min="0" max="100" value="0">
-            </div>
-            <p id="nurseFinalPriceText">מחיר סופי חבילת בסיס: <span id="nurseDiscountedPrice">710</span> ש"ח</p>
+            <p>מחיר: <span id="nurseBasePrice">710</span> ש"ח</p>
         </section>
 
         <div class="lab-tests-container">
@@ -42,13 +36,7 @@
                 </div>
                 <h3>בדיקות נבחרות:</h3>
                 <ul id="selectedTestsList"></ul>
-                <p>סכום ביניים לבדיקות: <span id="labTestsSubtotal">0</span> ש"ח</p>
-                <button id="toggleLabTestsDiscountBtn" class="discount-toggle-btn">הנחה על בדיקות המעבדה</button>
-                <div id="labTestsDiscountContainer" class="discount-input-container hidden">
-                    <label for="labTestsDiscount">% הנחה בדיקות מעבדה:</label>
-                    <input type="number" id="labTestsDiscount" min="0" max="100" value="0">
-                </div>
-                <p id="labTestsFinalPriceText">סה"כ לבדיקות: <span id="labTestsDiscountedTotal">0</span> ש"ח</p>
+                <p>סה"כ בדיקות: <span id="labTestsSubtotal">0</span> ש"ח</p>
             </section>
 
             <aside id="testDetailsSection">
@@ -65,9 +53,9 @@
             <p>חבילת בסיס: <span id="summaryNursePrice">710</span> ש"ח</p>
             <p>סה"כ בדיקות מעבדה: <span id="summaryLabTestsPrice">0</span> ש"ח</p>
             <p><strong>סה"כ כללי: <span id="grandTotal">710</span> ש"ח</strong></p>
-            <button id="toggleOverallDiscountBtn" class="discount-toggle-btn">הנחה כללי</button>
+            <button id="toggleOverallDiscountBtn" class="discount-toggle-btn">הנחה כללית</button>
             <div id="overallDiscountContainer" class="discount-input-container hidden">
-                <label for="grandTotalDiscount">% הנחה כללי:</label>
+                <label for="grandTotalDiscount">% הנחה כללית:</label>
                 <input type="number" id="grandTotalDiscount" min="0" max="100" value="0">
             </div>
             <h3>סכום סופי לתשלום: <span id="finalAmount">710</span> ש"ח</h3>
@@ -83,4 +71,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
