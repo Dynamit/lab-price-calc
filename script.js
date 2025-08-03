@@ -16,22 +16,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     // DOM Elements
     const priceListSelect = document.getElementById("priceListSelect");
 
-    const toggleNurseDiscountBtn = document.getElementById("toggleNurseDiscountBtn");
-    const nurseDiscountContainer = document.getElementById("nurseDiscountContainer");
-    const nurseVisitDiscountInput = document.getElementById("nurseDiscount");
     const nurseVisitBasePriceSpan = document.getElementById("nurseBasePrice"); 
-    const nurseVisitDiscountedPriceSpan = document.getElementById("nurseDiscountedPrice");
-    const nurseFinalPriceText = document.getElementById("nurseFinalPriceText");
 
     const testSearchInput = document.getElementById("testSearch");
     const searchResultsDiv = document.getElementById("testSuggestions");
     const selectedTestsUl = document.getElementById("selectedTestsList");
     const labTestsSubtotalSpan = document.getElementById("labTestsSubtotal");
-    const toggleLabTestsDiscountBtn = document.getElementById("toggleLabTestsDiscountBtn");
-    const labTestsDiscountContainer = document.getElementById("labTestsDiscountContainer");
-    const labTestsDiscountInput = document.getElementById("labTestsDiscount");
-    const labTestsDiscountedTotalSpan = document.getElementById("labTestsDiscountedTotal");
-    const labTestsFinalPriceText = document.getElementById("labTestsFinalPriceText");
 
     const testDetailsContentDiv = document.getElementById("testDetailsContent");
 
@@ -96,26 +86,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderSelectedTests(); 
     });
 
-    // Discount Toggle Buttons
-    if (toggleNurseDiscountBtn) toggleNurseDiscountBtn.addEventListener("click", () => {
-        nurseDiscountContainer.classList.toggle("hidden");
-        if (nurseDiscountContainer.classList.contains("hidden")) nurseVisitDiscountInput.value = 0;
-        updateCalculations();
-    });
-    if (toggleLabTestsDiscountBtn) toggleLabTestsDiscountBtn.addEventListener("click", () => {
-        labTestsDiscountContainer.classList.toggle("hidden");
-        if (labTestsDiscountContainer.classList.contains("hidden")) labTestsDiscountInput.value = 0;
-        updateCalculations();
-    });
+    // Overall Discount Toggle Button
     if (toggleOverallDiscountBtn) toggleOverallDiscountBtn.addEventListener("click", () => {
         overallDiscountContainer.classList.toggle("hidden");
         if (overallDiscountContainer.classList.contains("hidden")) overallDiscountInput.value = 0;
         updateCalculations();
     });
 
-    if (nurseVisitDiscountInput) nurseVisitDiscountInput.addEventListener("input", updateCalculations);
     if (testSearchInput) testSearchInput.addEventListener("input", handleSearch);
-    if (labTestsDiscountInput) labTestsDiscountInput.addEventListener("input", updateCalculations);
     if (overallDiscountInput) overallDiscountInput.addEventListener("input", updateCalculations);
     if (exportPdfButton) exportPdfButton.addEventListener("click", generateQuotePdfViaPrint);
     if (exportStaffPdfButton) exportStaffPdfButton.addEventListener("click", generateStaffPdfViaPrint);
@@ -226,20 +204,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // --- Calculation Logic ---
     function updateCalculations() {
+        // Get current nurse base price
         const currentNursePrice = getCurrentNurseBasePrice();
         if (nurseVisitBasePriceSpan) nurseVisitBasePriceSpan.textContent = formatPrice(currentNursePrice);
 
-        const nurseDiscountVal = nurseVisitDiscountInput ? parseFloat(nurseVisitDiscountInput.value) : 0;
-        const nurseDiscountPercent = (nurseDiscountContainer && !nurseDiscountContainer.classList.contains("hidden") && nurseDiscountVal > 0) ? nurseDiscountVal : 0;
-        let nurseDiscountAmount = (currentNursePrice * nurseDiscountPercent) / 100;
-        nurseDiscountAmount = Math.round(nurseDiscountAmount);
-        const discountedNurseVisitTotal = currentNursePrice - nurseDiscountAmount;
-        if (nurseVisitDiscountedPriceSpan) nurseVisitDiscountedPriceSpan.textContent = formatPrice(discountedNurseVisitTotal);
-        if (summaryNursePriceSpan) summaryNursePriceSpan.textContent = formatPrice(discountedNurseVisitTotal);
-        if (nurseFinalPriceText) nurseFinalPriceText.innerHTML = nurseDiscountPercent > 0 ? 
-            `מחיר סופי חבילת בסיס (כולל ${nurseDiscountPercent}% הנחה): <span id=\"nurseDiscountedPrice\">${formatPrice(discountedNurseVisitTotal)}</span> ש\"ח` : 
-            `מחיר סופי חבילת בסיס: <span id=\"nurseDiscountedPrice\">${formatPrice(discountedNurseVisitTotal)}</span> ש\"ח`;
+        // Update summary nurse price (no discount on nurse visit anymore)
+        if (summaryNursePriceSpan) summaryNursePriceSpan.textContent = formatPrice(currentNursePrice);
 
+        // Calculate lab tests total
         let labTestsTotal = 0;
         selectedLabTests.forEach(test => {
             const price = test.prices ? (test.prices[currentPriceType] || 0) : 0;
@@ -247,28 +219,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         if (labTestsSubtotalSpan) labTestsSubtotalSpan.textContent = formatPrice(labTestsTotal);
 
-        const labTestsDiscountVal = labTestsDiscountInput ? parseFloat(labTestsDiscountInput.value) : 0;
-        const labTestsDiscountPercent = (labTestsDiscountContainer && !labTestsDiscountContainer.classList.contains("hidden") && labTestsDiscountVal > 0) ? labTestsDiscountVal : 0;
-        let labTestsDiscountAmount = (labTestsTotal * labTestsDiscountPercent) / 100;
-        labTestsDiscountAmount = Math.round(labTestsDiscountAmount);
-        const discountedLabTestsTotal = labTestsTotal - labTestsDiscountAmount;
-        if (labTestsDiscountedTotalSpan) labTestsDiscountedTotalSpan.textContent = formatPrice(discountedLabTestsTotal);
-        if (summaryLabTestsPriceSpan) summaryLabTestsPriceSpan.textContent = formatPrice(discountedLabTestsTotal);
-        if (labTestsFinalPriceText) labTestsFinalPriceText.innerHTML = labTestsDiscountPercent > 0 ? 
-            `סה\"כ לבדיקות (כולל ${labTestsDiscountPercent}% הנחה): <span id=\"labTestsDiscountedTotal\">${formatPrice(discountedLabTestsTotal)}</span> ש\"ח` : 
-            `סה\"כ לבדיקות: <span id=\"labTestsDiscountedTotal\">${formatPrice(discountedLabTestsTotal)}</span> ש\"ח`;
+        // Update summary lab tests price (no discount on lab tests anymore)
+        if (summaryLabTestsPriceSpan) summaryLabTestsPriceSpan.textContent = formatPrice(labTestsTotal);
 
-        const currentGrandTotal = discountedNurseVisitTotal + discountedLabTestsTotal;
+        // Calculate grand total
+        const currentGrandTotal = currentNursePrice + labTestsTotal;
         if (grandTotalSpan) grandTotalSpan.textContent = formatPrice(currentGrandTotal);
 
+        // Apply overall discount only
         const overallDiscountVal = overallDiscountInput ? parseFloat(overallDiscountInput.value) : 0;
         const overallDiscountPercent = (overallDiscountContainer && !overallDiscountContainer.classList.contains("hidden") && overallDiscountVal > 0) ? overallDiscountVal : 0;
         let overallDiscountAmount = (currentGrandTotal * overallDiscountPercent) / 100;
         overallDiscountAmount = Math.round(overallDiscountAmount);
         const finalPrice = currentGrandTotal - overallDiscountAmount;
-        if (finalPriceSpan) finalPriceSpan.innerHTML = overallDiscountPercent > 0 ? 
-            `סכום סופי לתשלום (כולל ${overallDiscountPercent}% הנחה): <span id=\"finalAmountValue\">${formatPrice(finalPrice)}</span> ש\"ח` : 
-            `סכום סופי לתשלום: <span id=\"finalAmountValue\">${formatPrice(finalPrice)}</span> ש\"ח`;
+        
+        if (finalPriceSpan) {
+            finalPriceSpan.textContent = formatPrice(finalPrice);
+        }
     }
 
     function formatPrice(price) {
@@ -284,20 +251,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Get current values from the UI for PDF consistency
         const currentNurseBase = getCurrentNurseBasePrice();
-        const nurseDiscountVal = nurseVisitDiscountInput ? parseFloat(nurseVisitDiscountInput.value) : 0;
-        const nurseDiscountPercent = (nurseDiscountContainer && !nurseDiscountContainer.classList.contains("hidden") && nurseDiscountVal > 0) ? nurseDiscountVal : 0;
-        const nursePriceAfterDiscount = parseFloat(summaryNursePriceSpan.textContent.replace(/[^\d.-]/g, ""));
-
         const labTestsSubtotal = parseFloat(labTestsSubtotalSpan.textContent.replace(/[^\d.-]/g, ""));
-        const labTestsDiscountVal = labTestsDiscountInput ? parseFloat(labTestsDiscountInput.value) : 0;
-        const labTestsDiscountPercent = (labTestsDiscountContainer && !labTestsDiscountContainer.classList.contains("hidden") && labTestsDiscountVal > 0) ? labTestsDiscountVal : 0;
-        const labTestsPriceAfterDiscount = parseFloat(summaryLabTestsPriceSpan.textContent.replace(/[^\d.-]/g, ""));
-
-        const subtotalBeforeOverallDiscount = nursePriceAfterDiscount + labTestsPriceAfterDiscount;
+        const subtotalBeforeOverallDiscount = currentNurseBase + labTestsSubtotal;
 
         const overallDiscountVal = overallDiscountInput ? parseFloat(overallDiscountInput.value) : 0;
         const overallDiscountPercent = (overallDiscountContainer && !overallDiscountContainer.classList.contains("hidden") && overallDiscountVal > 0) ? overallDiscountVal : 0;
-        const totalAfterOverallDiscount = parseFloat(document.getElementById("finalAmountValue").textContent.replace(/[^\d.-]/g, "")); // This is the final amount INCLUDING VAT
+        const totalAfterOverallDiscount = parseFloat(finalPriceSpan.textContent.replace(/[^\d.-]/g, "")); // This is the final amount INCLUDING VAT
         
         // Correct VAT Calculation based on the final amount that INCLUDES VAT
         const finalAmountIncludingVat = totalAfterOverallDiscount;
@@ -348,9 +307,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 
                 <h2>חבילת בסיס (ביקור אחות, ספירת דם, כימיה בדם)</h2>
                 <div class="section-summary">
-                    <p>מחיר בסיס: ${formatPrice(currentNurseBase)} ש\"ח</p>
-                    ${nurseDiscountPercent > 0 ? `<p>% הנחה חבילת בסיס: ${nurseDiscountPercent}%</p>` : ""}
-                    <p><strong>מחיר חבילת בסיס ${nurseDiscountPercent > 0 ? "לאחר הנחה" : ""}: ${formatPrice(nursePriceAfterDiscount)} ש\"ח</strong></p>
+                    <p><strong>מחיר: ${formatPrice(currentNurseBase)} ש\"ח</strong></p>
                 </div>
 
                 <h2>בדיקות מעבדה נבחרות</h2>
@@ -359,18 +316,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <tbody>${testsHtml}</tbody>
                 </table>
                 <div class="section-summary">
-                    <p>סכום ביניים לבדיקות ${labTestsDiscountPercent > 0 ? "(לפני הנחה)" : ""}: ${formatPrice(labTestsSubtotal)} ש\"ח</p>
-                    ${labTestsDiscountPercent > 0 ? `<p>% הנחה בדיקות מעבדה: ${labTestsDiscountPercent}%</p>` : ""}
-                    <p><strong>סה\"כ לבדיקות ${labTestsDiscountPercent > 0 ? "לאחר הנחה" : ""}: ${formatPrice(labTestsPriceAfterDiscount)} ש\"ח</strong></p>
+                    <p><strong>סה\"כ בדיקות: ${formatPrice(labTestsSubtotal)} ש\"ח</strong></p>
                 </div>
 
                 <h2>סיכום כללי</h2>
                 <table class="summary-table">
-                    <tr><td>חבילת בסיס ${nurseDiscountPercent > 0 ? "(לאחר הנחה)" : ""}:</td><td>${formatPrice(nursePriceAfterDiscount)} ש\"ח</td></tr>
-                    <tr><td>סה\"כ בדיקות מעבדה ${labTestsDiscountPercent > 0 ? "(לאחר הנחה)" : ""}:</td><td>${formatPrice(labTestsPriceAfterDiscount)} ש\"ח</td></tr>
-                    <tr><td><strong>סה\"כ ביניים ${overallDiscountPercent > 0 ? "(לפני הנחה כללית)" : ""}:</strong></td><td><strong>${formatPrice(subtotalBeforeOverallDiscount)} ש\"ח</strong></td></tr>
-                    ${overallDiscountPercent > 0 ? `<tr><td>% הנחה כללי:</td><td>${overallDiscountPercent}%</td></tr>` : ""}
-                    ${overallDiscountPercent > 0 ? `<tr><td><strong>סה\"כ לאחר הנחה כללית (לפני מע\"מ):</strong></td><td><strong>${formatPrice(amountBeforeVat)} ש\"ח</strong></td></tr>` : `<tr><td><strong>סה\"כ לפני מע\"מ:</strong></td><td><strong>${formatPrice(amountBeforeVat)} ש\"ח</strong></td></tr>`}
+                    <tr><td>חבילת בסיס:</td><td>${formatPrice(currentNurseBase)} ש\"ח</td></tr>
+                    <tr><td>סה\"כ בדיקות מעבדה:</td><td>${formatPrice(labTestsSubtotal)} ש\"ח</td></tr>
+                    <tr><td><strong>סה\"כ ביניים:</strong></td><td><strong>${formatPrice(subtotalBeforeOverallDiscount)} ש\"ח</strong></td></tr>
+                    ${overallDiscountPercent > 0 ? `<tr><td>% הנחה כללית:</td><td>${overallDiscountPercent}%</td></tr>` : ""}
+                    ${overallDiscountPercent > 0 ? `<tr><td><strong>סה\"כ לאחר הנחה (לפני מע\"מ):</strong></td><td><strong>${formatPrice(amountBeforeVat)} ש\"ח</strong></td></tr>` : `<tr><td><strong>סה\"כ לפני מע\"מ:</strong></td><td><strong>${formatPrice(amountBeforeVat)} ש\"ח</strong></td></tr>`}
                     <tr><td>מע"מ (18%):</td><td>${formatPrice(vatAmount)} ש\"ח</td></tr>
                     <tr><td class="total-final"><strong>סכום סופי לתשלום (כולל מע"מ):</strong></td><td class="total-final"><strong>${formatPrice(finalAmountIncludingVat)} ש\"ח</strong></td></tr>
                 </table>
@@ -459,4 +414,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     // --- Start the application ---
     initializeApp();
 });
-
