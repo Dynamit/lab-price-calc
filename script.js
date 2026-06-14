@@ -3,8 +3,8 @@ let labPrices = []; // To store test codes, names, and their private/tourist pri
 let labDetails = {}; // ACTIVE details book (alias -> points to the selected branch's book)
 let labDetailsRamatHahayal = {}; // Ramat HaHayal test book
 let labDetailsHaifa = {}; // Haifa test book
-let currentPriceType = "private"; // Default price type
-let currentBranch = "ramat_hahayal"; // Default branch (preserves original behavior)
+let currentPriceType = null; // No default — the user must explicitly choose a price list
+let currentBranch = null;    // No default — the user must explicitly choose a lab
 let selectedLabTests = []; // Array to store currently selected lab tests
 
 // Branch registry: display labels only. Prices and PDF contact details are identical across branches.
@@ -12,6 +12,9 @@ const BRANCHES = {
     ramat_hahayal: { label: "רמת החייל" },
     haifa: { label: "חיפה" }
 };
+
+// Price-list display labels (used in the quote PDF).
+const PRICE_LABELS = { private: "מטופל פרטי", tourist: "תייר" };
 
 // Keep the active-book alias in sync with the selected branch.
 function applyActiveBranchDetails() {
@@ -59,6 +62,12 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;");
 }
 
+// Normalize text for search: lowercase, strip everything except Latin/Hebrew letters and
+// digits, so punctuation and spacing don't affect matching ("anti ttg" matches "Anti-TTG").
+function normalizeForSearch(value) {
+    return String(value || "").toLowerCase().replace(/[^0-9a-z֐-׿]/g, "");
+}
+
 // One test row: code – name – price, each isolated with <bdi> so RTL/LTR mixing can't
 // reorder it and the price stays glued to "ש"ח". priceText is already formatted.
 function formatTestLine(test, priceText) {
@@ -75,8 +84,10 @@ function getCurrentNurseBasePrice() {
 
 document.addEventListener("DOMContentLoaded", async () => {
     // DOM Elements
-    const priceListSelect = document.getElementById("priceListSelect");
-    const branchSelect = document.getElementById("branchSelect");
+    const appMain = document.getElementById("appMain");
+    const branchButtons = document.getElementById("branchButtons");
+    const priceButtons = document.getElementById("priceButtons");
+    const selectionHint = document.getElementById("selectionHint");
     const detailsBranchLabel = document.getElementById("detailsBranchLabel");
 
     const nurseVisitBasePriceSpan = document.getElementById("nurseBasePrice");
@@ -116,11 +127,44 @@ document.addEventListener("DOMContentLoaded", async () => {
         ]);
         loadState();
         applyActiveBranchDetails();
+        syncSelectionUI();
         renderSelectedTests();
         if (selectedLabTests.length > 0) {
             displayTestDetails(selectedLabTests[selectedLabTests.length - 1].test_code);
         }
         updateCalculations();
+    }
+
+    // --- Selection (lab + price list) gating ---
+    // The rest of the calculator stays locked until BOTH a lab and a price list are chosen.
+    function isReady() {
+        return !!currentBranch && !!currentPriceType;
+    }
+
+    function markActive(container, attr, value) {
+        if (!container) return;
+        container.querySelectorAll("button").forEach(btn => {
+            btn.classList.toggle("active", btn.getAttribute("data-" + attr) === value);
+        });
+    }
+
+    function updateReadyState() {
+        const ready = isReady();
+        if (appMain) appMain.classList.toggle("not-ready", !ready);
+        if (selectionHint) selectionHint.classList.toggle("hidden", ready);
+        if (testSearchInput) testSearchInput.disabled = !ready;
+        if (exportPdfButton) exportPdfButton.disabled = !ready;
+        if (exportStaffPdfButton) exportStaffPdfButton.disabled = !ready;
+        if (toggleBaseDiscountBtn) toggleBaseDiscountBtn.disabled = !ready;
+        if (!ready) closeSuggestions();
+    }
+
+    // Reflect current selection state in the buttons + readiness (used on load).
+    function syncSelectionUI() {
+        markActive(branchButtons, "branch", currentBranch);
+        markActive(priceButtons, "price", currentPriceType);
+        if (detailsBranchLabel && currentBranch) detailsBranchLabel.textContent = BRANCHES[currentBranch].label;
+        updateReadyState();
     }
 
     // --- State persistence (localStorage) ---
@@ -152,12 +196,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (state.branch && BRANCHES[state.branch]) {
             currentBranch = state.branch;
-            if (branchSelect) branchSelect.value = state.branch;
             if (detailsBranchLabel) detailsBranchLabel.textContent = BRANCHES[currentBranch].label;
         }
-        if (state.priceType) {
+        if (state.priceType && PRICE_LABELS[state.priceType]) {
             currentPriceType = state.priceType;
-            if (priceListSelect) priceListSelect.value = state.priceType;
         }
         if (Array.isArray(state.codes)) {
             // Re-resolve from the current price list so prices stay up to date.
@@ -224,16 +266,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // --- Event Listeners ---
-    if (priceListSelect) priceListSelect.addEventListener("change", (event) => {
-        currentPriceType = event.target.value;
-        updateCalculations();
-        renderSelectedTests();
-        saveState();
-    });
-
-    // Branch selector: switches the active details book only (prices/selection are unaffected).
-    if (branchSelect) branchSelect.addEventListener("change", (event) => {
-        currentBranch = event.target.value;
+    // Lab buttons: switch the active details book only (prices/selection are unaffected).
+    if (branchButtons) branchButtons.addEventListener("click", (event) => {
+        const btn = event.target;
+        const value = btn && btn.getAttribute ? btn.getAttribute("data-branch") : null;
+        if (!value || !BRANCHES[value]) return;
+        currentBranch = value;
+        markActive(branchButtons, "branch", value);
         applyActiveBranchDetails();
         if (detailsBranchLabel) detailsBranchLabel.textContent = BRANCHES[currentBranch].label;
         if (selectedLabTests.length > 0) {
@@ -241,6 +280,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else if (testDetailsContentDiv) {
             testDetailsContentDiv.innerHTML = "<p>בחר בדיקה מהרשימה כדי לראות את פרטיה.</p>";
         }
+        updateReadyState();
+        saveState();
+    });
+
+    // Price-list buttons: change which price column is used.
+    if (priceButtons) priceButtons.addEventListener("click", (event) => {
+        const btn = event.target;
+        const value = btn && btn.getAttribute ? btn.getAttribute("data-price") : null;
+        if (!value || !PRICE_LABELS[value]) return;
+        currentPriceType = value;
+        markActive(priceButtons, "price", value);
+        updateCalculations();
+        renderSelectedTests();
+        updateReadyState();
         saveState();
     });
 
@@ -291,11 +344,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function handleSearch() {
         if (!testSearchInput || !searchResultsDiv) return;
-        const query = testSearchInput.value.toLowerCase().trim();
+        const rawQuery = testSearchInput.value.trim();
+        const query = normalizeForSearch(testSearchInput.value);
         searchResultsDiv.innerHTML = "";
         activeIndex = -1;
         currentMatches = [];
-        if (query.length < 1) {
+        if (rawQuery.length < 1 || query.length < 1) {
             searchResultsDiv.classList.remove("active");
             return;
         }
@@ -305,8 +359,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
         const filteredTests = labPrices.filter(test =>
-            (test.test_name && test.test_name.toLowerCase().includes(query)) ||
-            (test.test_code && String(test.test_code).toLowerCase().includes(query))
+            normalizeForSearch(test.test_name).includes(query) ||
+            normalizeForSearch(test.test_code).includes(query)
         );
         if (filteredTests.length > 0) {
             currentMatches = filteredTests.slice(0, 15);
@@ -462,7 +516,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // --- PDF Generation via Print Dialog ---
     function generateQuotePdfViaPrint() {
-        const priceListName = priceListSelect.options[priceListSelect.selectedIndex].text;
+        const priceListName = PRICE_LABELS[currentPriceType] || "";
         const currentDate = new Date().toLocaleDateString("he-IL");
         const logoPath = "assets/logo_final.png"; // Using the new logo
 
