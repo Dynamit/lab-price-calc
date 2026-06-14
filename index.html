@@ -13,6 +13,14 @@
     </header>
 
     <main>
+        <section id="branchToggleSection">
+            <h2>בחר מעבדה:</h2>
+            <select id="branchSelect">
+                <option value="ramat_hahayal" selected>רמת החייל</option>
+                <option value="haifa">חיפה</option>
+            </select>
+        </section>
+
         <section id="priceListToggleSection">
             <h2>בחר מחירון:</h2>
             <select id="priceListSelect">
@@ -34,18 +42,21 @@
         <div class="lab-tests-container">
             <section id="labTestsSection">
                 <h2>מחשבון בדיקות מעבדה</h2>
-                <div>
+                <div class="search-wrapper">
                     <label for="testSearch">הוסף בדיקה:</label>
-                    <input type="text" id="testSearch" placeholder="חפש בדיקה...">
+                    <input type="text" id="testSearch" placeholder="חפש בדיקה..." autocomplete="off">
                     <div id="testSuggestions"></div>
                 </div>
-                <h3>בדיקות נבחרות:</h3>
+                <div class="selected-tests-header">
+                    <h3>בדיקות נבחרות:</h3>
+                    <button id="clearAllBtn" type="button" class="clear-all-btn hidden">נקה הכל</button>
+                </div>
                 <ul id="selectedTestsList"></ul>
                 <p>סה"כ בדיקות: <span id="labTestsSubtotal">0</span> ש"ח</p>
             </section>
 
             <aside id="testDetailsSection">
-                <h3>פרטי הבדיקה הנבחרת:</h3>
+                <h3>פרטי הבדיקה הנבחרת — <span id="detailsBranchLabel">רמת החייל</span></h3>
                 <div id="testDetailsContent">
                     <p>בחר בדיקה מהרשימה כדי לראות את פרטיה.</p>
                     <!-- Details will be populated here -->

@@ -1,12 +1,59 @@
 // Global variables
 let labPrices = []; // To store test codes, names, and their private/tourist prices
-let labDetails = {}; // To store additional details for each test, keyed by test_code
+let labDetails = {}; // ACTIVE details book (alias -> points to the selected branch's book)
+let labDetailsRamatHahayal = {}; // Ramat HaHayal test book
+let labDetailsHaifa = {}; // Haifa test book
 let currentPriceType = "private"; // Default price type
+let currentBranch = "ramat_hahayal"; // Default branch (preserves original behavior)
 let selectedLabTests = []; // Array to store currently selected lab tests
+
+// Branch registry: display labels only. Prices and PDF contact details are identical across branches.
+const BRANCHES = {
+    ramat_hahayal: { label: "רמת החייל" },
+    haifa: { label: "חיפה" }
+};
+
+// Keep the active-book alias in sync with the selected branch.
+function applyActiveBranchDetails() {
+    labDetails = (currentBranch === "haifa") ? labDetailsHaifa : labDetailsRamatHahayal;
+}
+
+// Per-branch ordered detail fields (JSON key -> display label). Ramat HaHayal keeps its
+// original 6 fields; Haifa shows the columns requested from the Haifa book (C,D,H,I,J,M,O,P,Q,R).
+const BRANCH_DETAIL_FIELDS = {
+    ramat_hahayal: [
+        { key: "patient_preparation_conditions", label: "תנאים והכנת החולה לפני הדיגום" },
+        { key: "tubes", label: "מבחנות נדרשות" },
+        { key: "sampling_conditions", label: "תנאי לקיחה ושימור" },
+        { key: "transport_instructions", label: "הוראות שינוע" },
+        { key: "execution_time_info", label: "מידע על זמן ביצוע" },
+        { key: "results_time", label: "משך זמן לקבלת תשובה", suffix: " (ימי עבודה)" }
+    ],
+    haifa: [
+        { key: "test_name_book", label: "שם הבדיקה" },
+        { key: "code_tfnit", label: "קוד תפנית" },
+        { key: "patient_preparation_conditions", label: "תנאים פרה אנליטיים (דרישות מיוחדות)" },
+        { key: "sampling_conditions", label: "תנאי לקיחה" },
+        { key: "tubes", label: "כלי קיבול לדגימה / מבחנה / צנצנת" },
+        { key: "execution_time_info", label: "זמן מירבי מדיגום עד הגעה למעבדה" },
+        { key: "performing_lab", label: "מעבדה מבצעת" },
+        { key: "results_time", label: "משך הזמן עד הוצאת תשובה (ימי עבודה)" },
+        { key: "storage_conditions", label: "תנאי שימור וטיפול בדגימה" },
+        { key: "transport_instructions", label: "תנאי שינוע" }
+    ]
+};
+
+// Build the <p> detail rows for the active branch's field set.
+function renderDetailRows(details) {
+    const fields = BRANCH_DETAIL_FIELDS[currentBranch] || BRANCH_DETAIL_FIELDS.ramat_hahayal;
+    return fields
+        .map(f => `<p><strong>${f.label}:</strong> ${details[f.key] || "לא צוין"}${f.suffix || ""}</p>`)
+        .join("\n                ");
+}
 
 // Base prices for nurse visit
 const NURSE_VISIT_BASE_PRICE_PRIVATE = 710;
-const NURSE_VISIT_BASE_PRICE_TOURIST = 910;
+const NURSE_VISIT_BASE_PRICE_TOURIST = 860;
 
 function getCurrentNurseBasePrice() {
     return currentPriceType === "tourist" ? NURSE_VISIT_BASE_PRICE_TOURIST : NURSE_VISIT_BASE_PRICE_PRIVATE;
@@ -15,8 +62,10 @@ function getCurrentNurseBasePrice() {
 document.addEventListener("DOMContentLoaded", async () => {
     // DOM Elements
     const priceListSelect = document.getElementById("priceListSelect");
+    const branchSelect = document.getElementById("branchSelect");
+    const detailsBranchLabel = document.getElementById("detailsBranchLabel");
 
-    const nurseVisitBasePriceSpan = document.getElementById("nurseBasePrice"); 
+    const nurseVisitBasePriceSpan = document.getElementById("nurseBasePrice");
 
     const testSearchInput = document.getElementById("testSearch");
     const searchResultsDiv = document.getElementById("testSuggestions");
@@ -35,15 +84,82 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const exportPdfButton = document.getElementById("exportPdfButton");
     const exportStaffPdfButton = document.getElementById("exportStaffPdfButton");
+    const clearAllBtn = document.getElementById("clearAllBtn");
+
+    // Search keyboard-navigation state
+    let currentMatches = [];
+    let activeIndex = -1;
+
+    const STORAGE_KEY = "labPriceCalcState_v1";
 
     // --- Initialization ---
     async function initializeApp() {
         console.log("Initializing app...");
         await Promise.all([
-            loadLabPrices(), 
-            loadLabDetails()
+            loadLabPrices(),
+            loadLabDetails(),
+            loadLabDetailsHaifa()
         ]);
-        updateCalculations(); 
+        loadState();
+        applyActiveBranchDetails();
+        renderSelectedTests();
+        if (selectedLabTests.length > 0) {
+            displayTestDetails(selectedLabTests[selectedLabTests.length - 1].test_code);
+        }
+        updateCalculations();
+    }
+
+    // --- State persistence (localStorage) ---
+    function saveState() {
+        try {
+            const state = {
+                branch: currentBranch,
+                priceType: currentPriceType,
+                codes: selectedLabTests.map(t => String(t.test_code)),
+                discountOpen: baseDiscountContainer ? !baseDiscountContainer.classList.contains("hidden") : false,
+                discountValue: baseDiscountInput ? baseDiscountInput.value : 0
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            // localStorage unavailable (private mode / disabled) — ignore, app still works.
+        }
+    }
+
+    function loadState() {
+        let state;
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            state = JSON.parse(raw);
+        } catch (e) {
+            return;
+        }
+        if (!state) return;
+
+        if (state.branch && BRANCHES[state.branch]) {
+            currentBranch = state.branch;
+            if (branchSelect) branchSelect.value = state.branch;
+            if (detailsBranchLabel) detailsBranchLabel.textContent = BRANCHES[currentBranch].label;
+        }
+        if (state.priceType) {
+            currentPriceType = state.priceType;
+            if (priceListSelect) priceListSelect.value = state.priceType;
+        }
+        if (Array.isArray(state.codes)) {
+            // Re-resolve from the current price list so prices stay up to date.
+            selectedLabTests = state.codes
+                .map(code => labPrices.find(t => String(t.test_code) === String(code)))
+                .filter(Boolean);
+        }
+        if (baseDiscountContainer && baseDiscountInput) {
+            if (state.discountOpen) {
+                baseDiscountContainer.classList.remove("hidden");
+                baseDiscountInput.value = state.discountValue || 0;
+            } else {
+                baseDiscountContainer.classList.add("hidden");
+                baseDiscountInput.value = 0;
+            }
+        }
     }
 
     // --- Data Loading Functions ---
@@ -70,20 +186,48 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const response = await fetch(jsonPath);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
-            labDetails = await response.json();
-            console.log("Lab details loaded successfully. Number of entries:", Object.keys(labDetails).length);
+            labDetailsRamatHahayal = await response.json();
+            console.log("Ramat HaHayal details loaded. Entries:", Object.keys(labDetailsRamatHahayal).length);
         } catch (error) {
-            console.error("Error loading lab details:", error);
-            if(testDetailsContentDiv) testDetailsContentDiv.innerHTML = 
+            console.error("Error loading Ramat HaHayal details:", error);
+            if(testDetailsContentDiv) testDetailsContentDiv.innerHTML =
                 `<p style=\"color: red;\">שגיאה בטעינת פרטי הבדיקות: ${error.message}.</p>`;
+        }
+    }
+
+    async function loadLabDetailsHaifa() {
+        const jsonPath = "assets/data/lab_details_haifa.json";
+        try {
+            const response = await fetch(jsonPath);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+            labDetailsHaifa = await response.json();
+            console.log("Haifa details loaded. Entries:", Object.keys(labDetailsHaifa).length);
+        } catch (error) {
+            // Non-fatal: leave the Haifa book empty so its tests fall back to "no details".
+            // Do NOT clobber the details panel — the default Ramat HaHayal branch must stay clean.
+            console.error("Error loading Haifa details:", error);
         }
     }
 
     // --- Event Listeners ---
     if (priceListSelect) priceListSelect.addEventListener("change", (event) => {
         currentPriceType = event.target.value;
-        updateCalculations(); 
-        renderSelectedTests(); 
+        updateCalculations();
+        renderSelectedTests();
+        saveState();
+    });
+
+    // Branch selector: switches the active details book only (prices/selection are unaffected).
+    if (branchSelect) branchSelect.addEventListener("change", (event) => {
+        currentBranch = event.target.value;
+        applyActiveBranchDetails();
+        if (detailsBranchLabel) detailsBranchLabel.textContent = BRANCHES[currentBranch].label;
+        if (selectedLabTests.length > 0) {
+            displayTestDetails(selectedLabTests[selectedLabTests.length - 1].test_code);
+        } else if (testDetailsContentDiv) {
+            testDetailsContentDiv.innerHTML = "<p>בחר בדיקה מהרשימה כדי לראות את פרטיה.</p>";
+        }
+        saveState();
     });
 
     // Base Package Discount Toggle Button
@@ -91,18 +235,52 @@ document.addEventListener("DOMContentLoaded", async () => {
         baseDiscountContainer.classList.toggle("hidden");
         if (baseDiscountContainer.classList.contains("hidden")) baseDiscountInput.value = 0;
         updateCalculations();
+        saveState();
     });
 
     if (testSearchInput) testSearchInput.addEventListener("input", handleSearch);
-    if (baseDiscountInput) baseDiscountInput.addEventListener("input", updateCalculations);
+    if (testSearchInput) testSearchInput.addEventListener("keydown", handleSearchKeydown);
+    if (baseDiscountInput) baseDiscountInput.addEventListener("input", () => { updateCalculations(); saveState(); });
     if (exportPdfButton) exportPdfButton.addEventListener("click", generateQuotePdfViaPrint);
     if (exportStaffPdfButton) exportStaffPdfButton.addEventListener("click", generateStaffPdfViaPrint);
+    if (clearAllBtn) clearAllBtn.addEventListener("click", clearAll);
+
+    // Close the suggestions when clicking outside the search box.
+    document.addEventListener("click", (event) => {
+        if (!searchResultsDiv) return;
+        if (!searchResultsDiv.contains(event.target) && event.target !== testSearchInput) {
+            closeSuggestions();
+        }
+    });
 
     // --- Search and Selection Logic ---
+    function closeSuggestions() {
+        if (!searchResultsDiv) return;
+        searchResultsDiv.innerHTML = "";
+        searchResultsDiv.classList.remove("active");
+        currentMatches = [];
+        activeIndex = -1;
+    }
+
+    function highlightActive() {
+        if (!searchResultsDiv) return;
+        const items = searchResultsDiv.querySelectorAll("li");
+        items.forEach((li, i) => {
+            if (i === activeIndex) {
+                li.classList.add("active-suggestion");
+                li.scrollIntoView({ block: "nearest" });
+            } else {
+                li.classList.remove("active-suggestion");
+            }
+        });
+    }
+
     function handleSearch() {
         if (!testSearchInput || !searchResultsDiv) return;
         const query = testSearchInput.value.toLowerCase().trim();
         searchResultsDiv.innerHTML = "";
+        activeIndex = -1;
+        currentMatches = [];
         if (query.length < 1) {
             searchResultsDiv.classList.remove("active");
             return;
@@ -112,17 +290,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             searchResultsDiv.classList.add("active");
             return;
         }
-        const filteredTests = labPrices.filter(test => 
-            (test.test_name && test.test_name.toLowerCase().includes(query)) || 
+        const filteredTests = labPrices.filter(test =>
+            (test.test_name && test.test_name.toLowerCase().includes(query)) ||
             (test.test_code && String(test.test_code).toLowerCase().includes(query))
         );
         if (filteredTests.length > 0) {
+            currentMatches = filteredTests.slice(0, 15);
             const ul = document.createElement("ul");
-            filteredTests.slice(0, 15).forEach(test => {
+            currentMatches.forEach((test, i) => {
                 const li = document.createElement("li");
                 const price = test.prices ? (test.prices[currentPriceType] || 0) : 0;
                 li.textContent = `(${test.test_code}) ${test.test_name} - ${formatPrice(price)} ש\"ח`;
                 li.addEventListener("click", () => addTestToSelected(test));
+                li.addEventListener("mousemove", () => { activeIndex = i; highlightActive(); });
                 ul.appendChild(li);
             });
             searchResultsDiv.appendChild(ul);
@@ -133,18 +313,38 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    function handleSearchKeydown(event) {
+        if (event.key === "Escape") {
+            closeSuggestions();
+            return;
+        }
+        if (!currentMatches.length) return;
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            activeIndex = Math.min(activeIndex + 1, currentMatches.length - 1);
+            highlightActive();
+        } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            activeIndex = Math.max(activeIndex - 1, 0);
+            highlightActive();
+        } else if (event.key === "Enter") {
+            if (activeIndex >= 0 && activeIndex < currentMatches.length) {
+                event.preventDefault();
+                addTestToSelected(currentMatches[activeIndex]);
+            }
+        }
+    }
+
     function addTestToSelected(test) {
         if (!selectedLabTests.find(t => String(t.test_code) === String(test.test_code))) {
             selectedLabTests.push(test);
             renderSelectedTests();
             updateCalculations();
-            displayTestDetails(test.test_code); 
+            displayTestDetails(test.test_code);
+            saveState();
         }
         if (testSearchInput) testSearchInput.value = "";
-        if (searchResultsDiv) {
-            searchResultsDiv.innerHTML = "";
-            searchResultsDiv.classList.remove("active");
-        }
+        closeSuggestions();
     }
 
     function removeTestFromSelected(testCode) {
@@ -158,9 +358,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
              testDetailsContentDiv.innerHTML = "<p>בחר בדיקה מהרשימה כדי לראות את פרטיה.</p>";
         }
+        saveState();
+    }
+
+    // Reset selected tests + base discount (branch/price-list settings are kept).
+    function clearAll() {
+        selectedLabTests = [];
+        if (baseDiscountContainer) baseDiscountContainer.classList.add("hidden");
+        if (baseDiscountInput) baseDiscountInput.value = 0;
+        if (testSearchInput) testSearchInput.value = "";
+        closeSuggestions();
+        renderSelectedTests();
+        updateCalculations();
+        if (testDetailsContentDiv) {
+            testDetailsContentDiv.innerHTML = "<p>בחר בדיקה מהרשימה כדי לראות את פרטיה.</p>";
+        }
+        saveState();
     }
 
     function renderSelectedTests() {
+        if (clearAllBtn) clearAllBtn.classList.toggle("hidden", selectedLabTests.length === 0);
         if (!selectedTestsUl) return;
         selectedTestsUl.innerHTML = "";
         selectedLabTests.forEach(test => {
@@ -190,12 +407,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (details) {
             testDetailsContentDiv.innerHTML = `
                 <h4>פרטי בדיקה: ${testName} (${testCode})</h4>
-                <p><strong>תנאים והכנת החולה לפני הדיגום:</strong> ${details.patient_preparation_conditions || "לא צוין"}</p>
-                <p><strong>מבחנות נדרשות:</strong> ${details.tubes || "לא צוין"}</p>
-                <p><strong>תנאי לקיחה ושימור:</strong> ${details.sampling_conditions || "לא צוין"}</p>
-                <p><strong>הוראות שינוע:</strong> ${details.transport_instructions || "לא צוין"}</p>
-                <p><strong>מידע על זמן ביצוע:</strong> ${details.execution_time_info || "לא צוין"}</p>
-                <p><strong>משך זמן לקבלת תשובה:</strong> ${details.results_time || "לא צוין"} (ימי עבודה)</p>
+                ${renderDetailRows(details)}
             `;
         } else {
             testDetailsContentDiv.innerHTML = `<p><strong>${testName} (${testCode})</strong></p><p>לא נמצאו פרטים נוספים עבור בדיקה זו.</p>`;
@@ -344,12 +556,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return `
                     <div class="test-item-staff">
                         <h3>${test.test_name} (${test.test_code})</h3>
-                        <p><strong>תנאים והכנת החולה לפני הדיגום:</strong> ${details.patient_preparation_conditions || "לא צוין"}</p>
-                        <p><strong>מבחנות נדרשות:</strong> ${details.tubes || "לא צוין"}</p>
-                        <p><strong>תנאי לקיחה ושימור:</strong> ${details.sampling_conditions || "לא צוין"}</p>
-                        <p><strong>הוראות שינוע:</strong> ${details.transport_instructions || "לא צוין"}</p>
-                        <p><strong>מידע על זמן ביצוע:</strong> ${details.execution_time_info || "לא צוין"}</p>
-                        <p><strong>משך זמן לקבלת תשובה:</strong> ${details.results_time || "לא צוין"} (ימי עבודה)</p>
+                        ${renderDetailRows(details)}
                     </div>
                 `;
             }
