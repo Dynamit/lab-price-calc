@@ -1,0 +1,12 @@
+# Source data spreadsheets — used to generate assets/data/*.json, not part of the deployed site
+*.xlsx
+*.xls
+*.csv
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*~
+.vscode/

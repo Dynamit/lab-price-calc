@@ -85,8 +85,9 @@ section h2, aside h3 {
     border-bottom: 2px solid #eee; 
 }
 
-/* Price List Toggle */
-#priceListToggleSection select {
+/* Price List & Branch Toggles */
+#priceListToggleSection select,
+#branchToggleSection select {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -157,6 +158,11 @@ section h2, aside h3 {
     box-sizing: border-box;
 }
 
+/* Anchor the absolutely-positioned suggestions to the search box (not the viewport) */
+.search-wrapper {
+    position: relative;
+}
+
 #testSuggestions {
     /* border: 1px solid #ccc; */ /* Border managed by .active class */
     border: none;
@@ -164,6 +170,7 @@ section h2, aside h3 {
     overflow-y: auto;
     background-color: white;
     position: absolute;
+    right: 0;
     width: calc(100% - 22px); /* Match input width */
     z-index: 1000;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -186,6 +193,38 @@ section h2, aside h3 {
 
 #testSuggestions li:hover {
     background-color: #f0f0f0;
+}
+
+/* Keyboard-highlighted suggestion (arrow navigation) */
+#testSuggestions li.active-suggestion {
+    background-color: #e7f1ff;
+}
+
+/* Selected-tests header with the "clear all" button */
+.selected-tests-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.clear-all-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+
+.clear-all-btn:hover {
+    background-color: #c82333;
+}
+
+.clear-all-btn.hidden {
+    display: none;
 }
 
 #selectedTestsList {
@@ -261,6 +300,19 @@ span {
     background-color: #138496;
 }
 
+/* --- Light visual polish: accessible focus + smooth buttons --- */
+button {
+    transition: background-color 0.15s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+button:focus-visible {
+    outline: 2px solid #0056b3;
+    outline-offset: 1px;
+}
+
 footer {
     text-align: center;
     padding: 20px;
@@ -296,7 +348,8 @@ footer {
     }
 
     input[type="number"], input[type="text"],
-    #priceListToggleSection select {
+    #priceListToggleSection select,
+    #branchToggleSection select {
         padding: 8px;
     }
 
