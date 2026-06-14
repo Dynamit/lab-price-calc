@@ -516,9 +516,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // --- PDF Generation via Print Dialog ---
     function generateQuotePdfViaPrint() {
-        const priceListName = PRICE_LABELS[currentPriceType] || "";
         const currentDate = new Date().toLocaleDateString("he-IL");
-        const logoPath = "assets/logo_final.png"; // Using the new logo
+        const logoPath = new URL("assets/logo_final.png", location.href).href;
 
         // Get current values from the UI for PDF consistency
         const nurseBaseRaw = getCurrentNurseBasePrice();
@@ -547,21 +546,33 @@ document.addEventListener("DOMContentLoaded", async () => {
             <html>
             <head>
                 <title>הצעת מחיר</title>
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
                 <style>
-                    body { direction: rtl; font-family: Arial, sans-serif !important; padding: 20px; margin: 0; }
-                    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-family: Arial, sans-serif !important; }
-                    th, td { border: 1px solid #ddd; padding: 8px; text-align: right; font-family: Arial, sans-serif !important; }
-                    th { background-color: #f2f2f2; }
-                    .pdf-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-                    .pdf-header img { max-width: 300px; max-height: 150px; margin-bottom: 10px; } /* Adjusted logo size */
-                    .pdf-header p { margin: 2px 0; font-size: 0.9em; font-family: Arial, sans-serif !important; }
-                    h1 { text-align: center; color: #007bff; margin-bottom: 5px; font-family: Arial, sans-serif !important; font-size: 1.8em; }
-                    h2 { text-align: right; color: #0056b3; margin-top: 25px; margin-bottom:10px; font-family: Arial, sans-serif !important; font-size: 1.3em; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-                    p { margin: 5px 0; font-family: Arial, sans-serif !important; }
-                    .section-summary p { margin: 8px 0; }
-                    .summary-table td:first-child { font-weight: bold; }
-                    .total-final { font-size: 1.2em; font-weight: bold; color: #dc3545; }
-                    .quote-details p { text-align: center; margin-bottom: 10px; font-size: 0.9em; }
+                    @page { margin: 1.4cm; }
+                    * { box-sizing: border-box; }
+                    body { direction: rtl; font-family: "Heebo", Arial, sans-serif; color: #0f1230; margin: 0; padding: 0; font-size: 14px; line-height: 1.6; }
+                    h1, h2 { font-family: "Frank Ruhl Libre", Georgia, "Times New Roman", serif; }
+                    .pdf-header { text-align: center; padding-bottom: 18px; margin-bottom: 24px; border-bottom: 2px solid #c2a14e; }
+                    .pdf-header img { max-width: 240px; max-height: 110px; margin-bottom: 8px; }
+                    .pdf-header p { margin: 2px 0; font-size: 12px; color: #5b6172; }
+                    h1 { text-align: center; color: #03045e; margin: 0 0 4px; font-size: 30px; font-weight: 700; }
+                    .quote-details { text-align: center; color: #5b6172; font-size: 13px; margin-bottom: 22px; }
+                    .quote-details p { margin: 3px 0; }
+                    h2 { color: #03045e; margin: 24px 0 10px; font-size: 18px; font-weight: 700; padding-bottom: 6px; border-bottom: 1px solid #e6e9f0; }
+                    p { margin: 5px 0; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+                    th, td { padding: 10px 12px; text-align: right; }
+                    thead th { background: #03045e; color: #fff; font-weight: 600; font-size: 13px; }
+                    tbody td { border-bottom: 1px solid #e6e9f0; }
+                    tbody tr:nth-child(even) { background: #fbfcfe; }
+                    .section-summary p { margin: 6px 0; }
+                    .section-summary strong { color: #03045e; }
+                    .summary-table td { border-bottom: 1px solid #e6e9f0; }
+                    .summary-table td:first-child { color: #0f1230; }
+                    .summary-table td:last-child { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
+                    .summary-table strong { color: #03045e; }
+                    .total-final td { font-size: 17px; font-weight: 700; color: #03045e; border-top: 2px solid #c2a14e; border-bottom: none; padding-top: 12px; }
                 </style>
             </head>
             <body>
@@ -573,7 +584,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <h1>הצעת מחיר</h1>
                 <div class="quote-details">
                     <p>תאריך: ${currentDate}</p>
-                    <p>סוג מחירון: ${priceListName}</p>
                 </div>
                 
                 <h2>חבילת בסיס (ביקור אחות, ספירת דם, כימיה בדם)</h2>
@@ -616,7 +626,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     function generateStaffPdfViaPrint() {
         const currentDate = new Date().toLocaleDateString("he-IL");
-        const logoPath = "assets/logo_final.png"; // Using the new logo
+        const logoPath = new URL("assets/logo_final.png", location.href).href;
 
         let testsDetailsHtml = selectedLabTests.map(test => {
             const details = labDetails[String(test.test_code)];
@@ -639,17 +649,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             <html>
             <head>
                 <title>רשימת בדיקות לצוות</title>
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
                 <style>
-                    body { direction: rtl; font-family: Arial, sans-serif !important; padding: 20px; margin: 0; }
-                    .pdf-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-                    .pdf-header img { max-width: 300px; max-height: 150px; margin-bottom: 10px; } /* Adjusted logo size */
-                    .pdf-header p { margin: 2px 0; font-size: 0.9em; font-family: Arial, sans-serif !important; }
-                    h1 { text-align: center; color: #007bff; margin-bottom: 20px; font-family: Arial, sans-serif !important; font-size: 1.8em; }
-                    .test-item-staff { border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 5px; background-color: #f9f9f9; }
-                    .test-item-staff h3 { color: #0056b3; margin-top: 0; margin-bottom: 10px; font-size: 1.2em; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-                    .test-item-staff p { margin: 5px 0; font-size: 0.95em; }
-                    .test-item-staff strong { color: #333; }
-                    .quote-details p { text-align: center; margin-bottom: 10px; font-size: 0.9em; }
+                    @page { margin: 1.4cm; }
+                    * { box-sizing: border-box; }
+                    body { direction: rtl; font-family: "Heebo", Arial, sans-serif; color: #0f1230; margin: 0; padding: 0; font-size: 14px; line-height: 1.6; }
+                    .pdf-header { text-align: center; padding-bottom: 18px; margin-bottom: 24px; border-bottom: 2px solid #c2a14e; }
+                    .pdf-header img { max-width: 240px; max-height: 110px; margin-bottom: 8px; }
+                    .pdf-header p { margin: 2px 0; font-size: 12px; color: #5b6172; }
+                    h1 { text-align: center; color: #03045e; margin: 0 0 6px; font-size: 28px; font-weight: 700; font-family: "Frank Ruhl Libre", Georgia, "Times New Roman", serif; }
+                    .quote-details { text-align: center; color: #5b6172; font-size: 13px; margin-bottom: 22px; }
+                    .quote-details p { margin: 3px 0; }
+                    .test-item-staff { border: 1px solid #e6e9f0; border-right: 3px solid #c2a14e; padding: 16px 18px; margin-bottom: 14px; border-radius: 10px; background: #fbfcfe; page-break-inside: avoid; }
+                    .test-item-staff h3 { color: #03045e; margin: 0 0 10px; font-size: 17px; padding-bottom: 8px; border-bottom: 1px solid #e6e9f0; font-family: "Frank Ruhl Libre", Georgia, "Times New Roman", serif; }
+                    .test-item-staff p { margin: 5px 0; font-size: 13.5px; color: #5b6172; }
+                    .test-item-staff strong { color: #03045e; font-weight: 600; }
                 </style>
             </head>
             <body>
