@@ -8,25 +8,24 @@
 </head>
 <body>
     <header>
-        <img src="assets/logo_new.png" alt="לוגו החברה" id="companyLogo">
+        <img src="assets/logo_final.png" alt="לוגו החברה" id="companyLogo">
         <h1>מחשבון מחירי מעבדה</h1>
     </header>
 
-    <main>
-        <section id="branchToggleSection">
-            <h2>בחר מעבדה:</h2>
-            <select id="branchSelect">
-                <option value="ramat_hahayal" selected>רמת החייל</option>
-                <option value="haifa">חיפה</option>
-            </select>
-        </section>
-
-        <section id="priceListToggleSection">
-            <h2>בחר מחירון:</h2>
-            <select id="priceListSelect">
-                <option value="private" selected>מטופל פרטי</option>
-                <option value="tourist">תייר</option>
-            </select>
+    <main id="appMain" class="not-ready">
+        <section id="selectionSection">
+            <h2>בחר מעבדה ומחירון כדי להתחיל:</h2>
+            <div class="choice-row">
+                <div class="choice-group" id="branchButtons" role="group" aria-label="בחר מעבדה">
+                    <button type="button" class="choice-btn" data-branch="ramat_hahayal">רמת החייל</button>
+                    <button type="button" class="choice-btn" data-branch="haifa">חיפה</button>
+                </div>
+                <div class="choice-group" id="priceButtons" role="group" aria-label="בחר מחירון">
+                    <button type="button" class="choice-btn" data-price="private">מטופל פרטי</button>
+                    <button type="button" class="choice-btn" data-price="tourist">תייר</button>
+                </div>
+            </div>
+            <p id="selectionHint">יש לבחור מעבדה <strong>וגם</strong> מחירון כדי להמשיך.</p>
         </section>
 
         <section id="nurseVisitSection">
@@ -56,7 +55,7 @@
             </section>
 
             <aside id="testDetailsSection">
-                <h3>פרטי הבדיקה הנבחרת — <span id="detailsBranchLabel">רמת החייל</span></h3>
+                <h3>פרטי הבדיקה הנבחרת — <span id="detailsBranchLabel">—</span></h3>
                 <div id="testDetailsContent">
                     <p>בחר בדיקה מהרשימה כדי לראות את פרטיה.</p>
                     <!-- Details will be populated here -->
@@ -75,7 +74,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 כל הזכויות שמורות ד"ר עמית גיל</p>
+        <p>&copy; 2026 כל הזכויות שמורות ד"ר עמית גיל</p>
     </footer>
 
     <script src="script.js"></script>

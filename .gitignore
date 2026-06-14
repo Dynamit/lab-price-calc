@@ -3,6 +3,11 @@
 *.xls
 *.csv
 
+# Archives / downloads that may land in the project folder (not site content)
+*.zip
+*.rar
+*.7z
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db
