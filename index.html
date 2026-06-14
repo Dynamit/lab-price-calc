@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מחשבון מחירי מעבדה</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -17,10 +20,12 @@
             <h2>בחר מעבדה ומחירון כדי להתחיל:</h2>
             <div class="choice-row">
                 <div class="choice-group" id="branchButtons" role="group" aria-label="בחר מעבדה">
+                    <span class="group-label">מעבדה</span>
                     <button type="button" class="choice-btn" data-branch="ramat_hahayal">רמת החייל</button>
                     <button type="button" class="choice-btn" data-branch="haifa">חיפה</button>
                 </div>
                 <div class="choice-group" id="priceButtons" role="group" aria-label="בחר מחירון">
+                    <span class="group-label">מחירון</span>
                     <button type="button" class="choice-btn" data-price="private">מטופל פרטי</button>
                     <button type="button" class="choice-btn" data-price="tourist">תייר</button>
                 </div>
@@ -68,8 +73,10 @@
             <p>חבילת בסיס: <span id="summaryNursePrice">710</span> ש"ח</p>
             <p>סה"כ בדיקות מעבדה: <span id="summaryLabTestsPrice">0</span> ש"ח</p>
             <h3>סכום סופי לתשלום: <span id="finalAmount">710</span> ש"ח</h3>
-            <button id="exportPdfButton">ייצא הצעת מחיר ל-PDF</button>
-            <button id="exportStaffPdfButton" style="margin-top: 10px;">ייצא רשימת בדיקות לצוות ל-PDF</button>
+            <div class="summary-actions">
+                <button id="exportPdfButton">ייצא הצעת מחיר ל-PDF</button>
+                <button id="exportStaffPdfButton">ייצא רשימת בדיקות לצוות ל-PDF</button>
+            </div>
         </section>
     </main>
 
