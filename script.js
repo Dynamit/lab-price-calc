@@ -51,6 +51,20 @@ function renderDetailRows(details) {
         .join("\n                ");
 }
 
+// Escape user-facing data before injecting via innerHTML.
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+// One test row: code – name – price, each isolated with <bdi> so RTL/LTR mixing can't
+// reorder it and the price stays glued to "ש"ח". priceText is already formatted.
+function formatTestLine(test, priceText) {
+    return `(<bdi>${escapeHtml(test.test_code)}</bdi>) - <bdi>${escapeHtml(test.test_name)}</bdi> - <bdi>${priceText} ש"ח</bdi>`;
+}
+
 // Base prices for nurse visit
 const NURSE_VISIT_BASE_PRICE_PRIVATE = 710;
 const NURSE_VISIT_BASE_PRICE_TOURIST = 860;
@@ -300,7 +314,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             currentMatches.forEach((test, i) => {
                 const li = document.createElement("li");
                 const price = test.prices ? (test.prices[currentPriceType] || 0) : 0;
-                li.textContent = `(${test.test_code}) ${test.test_name} - ${formatPrice(price)} ש\"ח`;
+                li.innerHTML = formatTestLine(test, formatPrice(price));
                 li.addEventListener("click", () => addTestToSelected(test));
                 li.addEventListener("mousemove", () => { activeIndex = i; highlightActive(); });
                 ul.appendChild(li);
@@ -383,8 +397,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         selectedLabTests.forEach(test => {
             const li = document.createElement("li");
             const price = test.prices ? (test.prices[currentPriceType] || 0) : 0;
-            li.innerHTML = `(${test.test_code}) ${test.test_name} - ${formatPrice(price)} ש\"ח 
-                          <button class=\"remove-btn\" data-code=\"${test.test_code}\">הסר</button>`;
+            li.innerHTML = `<span class="selected-test-info" dir="rtl">${formatTestLine(test, formatPrice(price))}</span>`
+                + `<button class=\"remove-btn\" data-code=\"${test.test_code}\">הסר</button>`;
             li.addEventListener("click", (e) => {
                 if (!e.target.classList.contains("remove-btn")) {
                      displayTestDetails(test.test_code);
