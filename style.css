@@ -1,169 +1,329 @@
-/* General Styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
-    direction: rtl; /* Right-to-left for Hebrew */
+/* ===========================================================================
+   מחשבון מחירי מעבדה — "Assuta Editorial"
+   Navy authority · teal→mint action · gold hairline accent.
+   Brand colors sampled from Assuta assets (navy #03045e, teal #509675 /
+   mint #7ae582) and the "עד הבית" logo (gold #c2a14e).
+   =========================================================================== */
+
+:root {
+    /* Brand navy (authority) */
+    --navy: #03045e;
+    --navy-700: #1b1d72;
+    --navy-900: #010734;
+    --ink: #0f1230;
+    --muted: #5b6172;
+
+    /* Teal -> mint (the single ACTION / positive color) */
+    --teal: #509675;
+    --teal-deep: #3c7a5d;
+    --mint: #7ae582;
+
+    /* Gold (decorative hairline only) */
+    --gold: #c2a14e;
+    --gold-600: #a8863a;
+    --gold-soft: #f4ead0;
+
+    /* Semantic single danger (destructive only) */
+    --danger: #b3392f;
+    --danger-hover: #922c24;
+    --danger-border: #e3b8b3;
+    --danger-bg: #fbeceb;
+
+    /* Surfaces / lines (cool clinical paper) */
+    --bg: #f5f6f9;
+    --surface: #ffffff;
+    --surface-alt: #fbfcfe;
+    --line: #e6e9f0;
+    --line-strong: #d4d9e6;
+    --teal-tint: #e8f2ec;
+
+    /* Elevation (navy-tinted, never gray) */
+    --shadow-sm: 0 1px 2px rgba(3, 4, 94, .05);
+    --shadow-card: 0 1px 2px rgba(3, 4, 94, .04), 0 8px 24px rgba(3, 4, 94, .06);
+    --shadow-pop: 0 12px 32px rgba(3, 4, 94, .14);
+    --shadow-teal: 0 6px 16px rgba(80, 150, 117, .32);
+    --ring: 0 0 0 4px rgba(80, 150, 117, .18);
+
+    /* Type */
+    --font-display: "Frank Ruhl Libre", Georgia, "Times New Roman", serif;
+    --font-ui: "Heebo", system-ui, "Segoe UI", Arial, sans-serif;
+
+    /* Radius */
+    --r-sm: 9px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --r-pill: 999px;
+
+    /* 4px spacing scale */
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px;
+    --s5: 24px; --s6: 32px; --s7: 40px;
 }
 
+/* General ----------------------------------------------------------------- */
+body {
+    font-family: var(--font-ui);
+    margin: 0;
+    padding: 0;
+    color: var(--ink);
+    line-height: 1.6;
+    direction: rtl;
+    background:
+        radial-gradient(60% 50% at 100% 0%, rgba(80, 150, 117, .06), transparent 70%),
+        radial-gradient(50% 40% at 0% 10%, rgba(3, 4, 94, .04), transparent 70%),
+        var(--bg);
+    background-attachment: fixed;
+}
+
+h1, h2, aside h3, #finalAmount {
+    font-family: var(--font-display);
+}
+
+/* Header ------------------------------------------------------------------ */
 header {
-    background-color: #007bff;
-    color: white;
-    padding: 1em 0;
     text-align: center;
-    border-bottom: 5px solid #0056b3;
+    padding: 28px 16px 22px;
+    color: #fff;
+    background:
+        radial-gradient(120% 140% at 50% -20%, rgba(122, 229, 130, .10), transparent 60%),
+        linear-gradient(135deg, #03045e, #1b1d72 60%, #03045e);
+    border-bottom: 1px solid var(--gold);
+    box-shadow: 0 3px 0 rgba(3, 4, 94, .25);
 }
 
 header img#companyLogo {
-    max-height: 100px; /* Increased from 50px */
-    margin-bottom: 10px;
+    max-height: 84px;
+    margin: 0 auto;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .25));
 }
 
 header h1 {
-    margin: 0;
-    font-size: 1.8em;
+    margin: 12px 0 0;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    color: #fff;
 }
 
+header h1::after {
+    content: "";
+    display: block;
+    width: 64px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+    margin: 12px auto 0;
+}
+
+/* Main sheet -------------------------------------------------------------- */
 main {
-    padding: 15px;
-    max-width: 900px; 
-    margin: 20px auto;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    max-width: 920px;
+    margin: -20px auto 40px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-card);
+    padding: 32px 36px;
+    position: relative;
 }
 
+/* Sections ---------------------------------------------------------------- */
 section {
-    background-color: #fff;
-    margin-bottom: 20px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    background: var(--surface);
+    margin-bottom: 28px;
+    padding: 24px 28px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-card);
 }
 
+section h2 {
+    color: var(--navy);
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 0;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+section h2::after,
+aside h3::after {
+    content: "";
+    display: block;
+    width: 48px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+    margin: 10px 0 0 auto; /* RTL: gold accent sits under the start/right edge */
+}
+
+/* Keep the lab-tests area frameless (it holds the search + details columns) */
 section#labTestsSection {
-    border: none !important; 
+    border: none !important;
     box-shadow: none !important;
-    padding-top: 0; /* Try to reduce space if h2 border was issue */
+    background: transparent;
+    padding-top: 0;
 }
 
-/* Ensure the h2 inside labTestsSection doesn't create an unwanted top line if padding is 0 */
 section#labTestsSection > h2 {
-    margin-top: 20px; /* Add back some margin if section padding-top is 0 */
-}
-
-aside#testDetailsSection {
-    background-color: #f9f9f9;
-    margin-bottom: 20px; 
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    flex-basis: 300px;
-    flex-shrink: 0;
-    border-left: none !important;
-    border-right: none !important;
-    border-top: 1px solid #ddd !important;
-    border-bottom: 1px solid #ddd !important;
+    margin-top: 0;
 }
 
 .lab-tests-container {
     display: flex;
-    gap: 20px; 
+    gap: 28px;
     border: none !important;
     box-shadow: none !important;
 }
 
-section h2, aside h3 {
-    color: #007bff;
-    padding-bottom: 10px;
-    margin-top: 0; /* Default, but can be overridden */
-    border-bottom: 2px solid #eee; 
+/* ---- Step 1: lab + price-list segmented controls ------------------------ */
+#selectionSection {
+    background: var(--surface-alt);
+    border: 1px solid var(--line-strong);
+    box-shadow: inset 0 1px 2px rgba(3, 4, 94, .04);
 }
 
-/* Lab + price-list selection buttons */
 #selectionSection .choice-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 28px;
-    align-items: center;
-    margin-top: 5px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 14px;
 }
 
 .choice-group {
-    display: flex;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-lg);
+    box-shadow: inset 0 1px 2px rgba(3, 4, 94, .04);
+}
+
+.group-label {
+    grid-column: 1 / -1;
+    display: block;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font: 600 12px/1 var(--font-ui);
+    letter-spacing: .04em;
 }
 
 .choice-btn {
-    padding: 10px 18px;
-    border: 2px solid #007bff;
-    background-color: #fff;
-    color: #007bff;
-    border-radius: 6px;
+    min-height: 56px;
+    padding: 14px 20px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--navy);
+    font: 600 17px var(--font-ui);
+    border-radius: 11px;
     cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background .2s, color .2s, box-shadow .2s, transform .15s;
 }
 
 .choice-btn:hover {
-    background-color: #eaf3ff;
+    background: var(--surface-alt);
+    color: var(--navy-700);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.choice-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--ring);
 }
 
 .choice-btn.active {
-    background-color: #007bff;
+    background: linear-gradient(135deg, var(--mint) 0%, var(--teal) 100%);
     color: #fff;
+    font-weight: 700;
+    box-shadow: var(--shadow-teal), inset 0 1px 0 rgba(255, 255, 255, .25);
+    transform: translateY(-1px);
 }
 
+.choice-btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: 16px;
+    right: 16px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+}
+
+.choice-btn.active:active {
+    transform: translateY(0) scale(.985);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Gate hint — calm info chip, not an error */
 #selectionHint {
-    margin: 12px 0 0;
-    color: #dc3545;
-    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0 0;
+    padding: 8px 16px;
+    background: var(--gold-soft);
+    color: var(--navy);
+    border: 1px solid var(--gold);
+    border-radius: var(--r-pill);
+    font: 500 14px var(--font-ui);
+}
+
+#selectionHint::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold-600);
+    flex: 0 0 auto;
+}
+
+#selectionHint strong {
+    color: var(--navy);
+    font-weight: 700;
 }
 
 #selectionHint.hidden {
     display: none;
 }
 
-/* Lock the calculator until both a lab and a price list are chosen */
-#appMain.not-ready #nurseVisitSection,
-#appMain.not-ready .lab-tests-container,
-#appMain.not-ready #summarySection {
-    opacity: 0.45;
-    pointer-events: none;
-}
-
-/* Overall discount button and container */
+/* ---- Nurse base package + discount -------------------------------------- */
 .discount-toggle-btn {
-    background-color: #6c757d;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
+    background: transparent;
+    color: var(--navy);
+    border: 1px solid var(--line-strong);
+    padding: 8px 16px;
+    border-radius: var(--r-sm);
     cursor: pointer;
-    font-size: 0.9em;
+    font: 600 14px var(--font-ui);
     margin-top: 10px;
-    margin-bottom: 5px;
 }
 
 .discount-toggle-btn:hover {
-    background-color: #5a6268;
+    background: var(--surface-alt);
+    border-color: var(--teal);
+    color: var(--teal-deep);
 }
 
 .discount-input-container {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px dashed #ccc;
-    border-radius: 4px;
-    background-color: #f9f9f9;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    padding: 14px 16px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+    background: var(--gold-soft);
 }
 
 .discount-input-container.hidden {
@@ -173,94 +333,137 @@ section h2, aside h3 {
 .discount-input-container label {
     margin-bottom: 0;
     flex-shrink: 0;
+    color: var(--navy);
+    font-weight: 600;
 }
 
 .discount-input-container input[type="number"] {
     width: auto;
     flex-grow: 1;
     margin-bottom: 0;
-    max-width: 100px;
+    max-width: 110px;
 }
 
-/* Specific for test search input field */
-#labTestsSection > div:first-of-type label { 
-    display: block;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-#labTestsSection > div:first-of-type input[type="text"] { 
-    width: calc(100% - 22px); 
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+/* ---- Shared field style (search + number inputs) ------------------------ */
+input[type="text"],
+input[type="number"] {
+    background: #fff;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+    padding: 13px 16px;
+    font: 16px var(--font-ui);
+    color: var(--ink);
     box-sizing: border-box;
+    box-shadow: inset 0 1px 2px rgba(3, 4, 94, .04);
+    transition: border-color .18s, box-shadow .18s;
+    font-variant-numeric: tabular-nums;
 }
 
-/* Anchor the absolutely-positioned suggestions to the search box (not the viewport) */
+input[type="text"]:focus,
+input[type="number"]:focus {
+    border-color: var(--teal);
+    box-shadow: var(--ring);
+    outline: none;
+}
+
+/* ---- Search box + suggestions ------------------------------------------- */
 .search-wrapper {
     position: relative;
 }
 
+.search-wrapper label {
+    display: block;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--navy);
+}
+
+.search-wrapper input[type="text"] {
+    width: calc(100% - 22px);
+}
+
 #testSuggestions {
-    /* border: 1px solid #ccc; */ /* Border managed by .active class */
     border: none;
-    max-height: 150px;
+    max-height: 220px;
     overflow-y: auto;
-    background-color: white;
+    background: #fff;
     position: absolute;
     right: 0;
-    width: calc(100% - 22px); /* Match input width */
+    width: calc(100% - 22px);
     z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-pop);
+    margin-top: 4px;
 }
 
 #testSuggestions.active {
-    border: 1px solid #ccc;
+    border: 1px solid var(--line-strong);
 }
 
 #testSuggestions ul {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
     margin: 0;
 }
 
 #testSuggestions li {
-    padding: 8px;
+    padding: 11px 14px;
     cursor: pointer;
+    font-size: 15px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
+}
+
+#testSuggestions li:last-child {
+    border-bottom: none;
 }
 
 #testSuggestions li:hover {
-    background-color: #f0f0f0;
+    background: var(--surface-alt);
 }
 
-/* Keyboard-highlighted suggestion (arrow navigation) */
 #testSuggestions li.active-suggestion {
-    background-color: #e7f1ff;
+    background: var(--teal-tint);
+    box-shadow: inset -3px 0 0 var(--teal); /* RTL: highlight on the start/right edge */
 }
 
-/* Selected-tests header with the "clear all" button */
+/* ---- Selected tests list ----------------------------------------------- */
 .selected-tests-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.selected-tests-header h3 {
+    font: 600 16px var(--font-ui);
+    color: var(--navy);
+    margin: 0;
+}
+
+.clear-all-btn,
+#selectedTestsList li button.remove-btn {
+    background: #fff;
+    color: var(--danger);
+    border: 1px solid var(--danger-border);
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    flex: 0 0 auto;
+    font: 600 13px var(--font-ui);
+    transition: background .15s, color .15s, border-color .15s;
 }
 
 .clear-all-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-    flex-shrink: 0;
+    padding: 7px 14px;
 }
 
-.clear-all-btn:hover {
-    background-color: #c82333;
+.clear-all-btn:hover,
+#selectedTestsList li button.remove-btn:hover {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
 }
 
 .clear-all-btn.hidden {
@@ -268,148 +471,287 @@ section h2, aside h3 {
 }
 
 #selectedTestsList {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
-    margin-top: 10px; /* Add some space above the list */
+    margin-top: 12px;
 }
 
 #selectedTestsList li {
-    background-color: #e9ecef;
-    padding: 8px 12px;
-    margin-bottom: 5px;
-    border-radius: 4px;
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 12px 16px;
+    margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    transition: box-shadow .15s, border-color .15s, transform .15s;
+}
+
+#selectedTestsList li:hover {
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-card);
+    transform: translateX(-2px); /* RTL: nudge toward the start */
+}
+
+.selected-test-info {
+    color: var(--ink);
+    font-size: 15px;
 }
 
 #selectedTestsList li button.remove-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
+    padding: 6px 12px;
 }
 
-#selectedTestsList li button.remove-btn:hover {
-    background-color: #c82333;
+/* ---- Prices (scoped — replaces the old leaky global span color) --------- */
+#nurseBasePrice,
+#labTestsSubtotal,
+#summaryNursePrice,
+#summaryLabTestsPrice,
+.selected-test-info bdi:last-child {
+    color: var(--teal-deep);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---- Details aside ------------------------------------------------------ */
+aside#testDetailsSection {
+    background: var(--surface-alt);
+    margin-bottom: 20px;
+    padding: 24px;
+    border: 1px solid var(--line) !important;
+    border-right: 2px solid var(--gold) !important; /* RTL: gold keyline on start edge */
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-sm);
+    flex-basis: 320px;
+    flex-shrink: 0;
+}
+
+aside#testDetailsSection h3 {
+    color: var(--navy);
+    font-size: 18px;
+    margin-top: 0;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+#detailsBranchLabel {
+    color: var(--teal-deep);
+    font-weight: 600;
+}
+
+#testDetailsContent h4 {
+    color: var(--navy);
+    font: 600 15px var(--font-ui);
+    margin: 0 0 12px;
 }
 
 #testDetailsContent p {
     margin-bottom: 8px;
-    font-size: 0.95em;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
 }
+
 #testDetailsContent strong {
-    color: #555;
+    color: var(--navy);
+    font-weight: 600;
 }
 
-span {
-    font-weight: bold;
-    color: #28a745;
+/* ---- Summary + exports -------------------------------------------------- */
+#summarySection {
+    border-top: 3px solid var(--navy);
 }
 
-#summarySection h3 span {
-    color: #dc3545;
-    font-size: 1.2em;
+#summarySection p {
+    margin: 8px 0;
 }
 
-#exportPdfButton, #exportStaffPdfButton {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
+#finalAmount {
+    color: var(--navy);
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.summary-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+#exportPdfButton,
+#exportStaffPdfButton {
+    min-height: 52px;
+    padding: 14px 24px;
+    border-radius: var(--r-md);
     cursor: pointer;
-    font-size: 1em;
-    margin-top: 15px;
-    display: inline-block;
+    font: 700 16px var(--font-ui);
+    transition: transform .18s, box-shadow .18s, filter .18s, background .18s, color .18s;
 }
 
-#exportPdfButton:hover, #exportStaffPdfButton:hover {
-    background-color: #218838;
+#exportPdfButton {
+    background: linear-gradient(135deg, var(--mint), var(--teal));
+    color: #04342a; /* dark text for AA contrast on mint */
+    border: none;
+    box-shadow: var(--shadow-teal);
+}
+
+#exportPdfButton:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-pop);
+}
+
+#exportPdfButton:active {
+    transform: translateY(0);
 }
 
 #exportStaffPdfButton {
-    background-color: #17a2b8; /* Different color for staff button */
-    margin-right: 10px; /* Space from other button if on same line */
+    background: #fff;
+    color: var(--navy);
+    border: 1.5px solid var(--navy);
 }
 
 #exportStaffPdfButton:hover {
-    background-color: #138496;
+    background: var(--navy);
+    color: #fff;
 }
 
-/* --- Light visual polish: accessible focus + smooth buttons --- */
-button {
-    transition: background-color 0.15s ease;
+/* ---- Disabled (gate sets .disabled on search/exports/discount) ---------- */
+button:disabled {
+    opacity: .5;
+    filter: grayscale(.25);
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none;
 }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
-select:focus,
-button:focus-visible {
-    outline: 2px solid #0056b3;
-    outline-offset: 1px;
-}
-
+/* ---- Footer ------------------------------------------------------------- */
 footer {
     text-align: center;
-    padding: 20px;
-    background-color: #343a40;
-    color: white;
+    padding: 24px;
+    background: var(--navy-900);
+    color: rgba(255, 255, 255, .82);
+    border-top: 1px solid var(--gold);
     margin-top: 30px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) { 
+/* ---- Generic focus ring for any other interactive element -------------- */
+button:focus-visible,
+select:focus-visible {
+    outline: none;
+    box-shadow: var(--ring);
+}
+
+/* ===========================================================================
+   The "not ready" gate — locked until a lab AND a price list are chosen.
+   Keep the exact selectors + opacity/pointer-events; only add a transition.
+   =========================================================================== */
+#appMain #nurseVisitSection,
+#appMain .lab-tests-container,
+#appMain #summarySection {
+    transition: opacity .4s ease, filter .4s ease;
+}
+
+#appMain.not-ready #nurseVisitSection,
+#appMain.not-ready .lab-tests-container,
+#appMain.not-ready #summarySection {
+    opacity: 0.45;
+    pointer-events: none;
+    filter: saturate(.6);
+}
+
+/* ===========================================================================
+   Motion — one orchestrated entrance + restrained feedback.
+   Content is visible by default; keyframes only run when motion is allowed.
+   =========================================================================== */
+@keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes headerIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes pickPulse {
+    0%   { transform: translateY(-1px) scale(.97); }
+    60%  { transform: translateY(-1px) scale(1.02); }
+    100% { transform: translateY(-1px) scale(1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    header { animation: headerIn .5s ease both; }
+    #selectionSection { animation: rise .5s cubic-bezier(.22, 1, .36, 1) both; animation-delay: .08s; }
+    #nurseVisitSection { animation: rise .5s cubic-bezier(.22, 1, .36, 1) both; animation-delay: .15s; }
+    .lab-tests-container { animation: rise .5s cubic-bezier(.22, 1, .36, 1) both; animation-delay: .22s; }
+    #summarySection { animation: rise .5s cubic-bezier(.22, 1, .36, 1) both; animation-delay: .29s; }
+    .choice-btn.active { animation: pickPulse .18s ease; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; }
+}
+
+/* ===========================================================================
+   Responsive
+   =========================================================================== */
+@media (max-width: 768px) {
     .lab-tests-container {
         flex-direction: column;
     }
 
     aside#testDetailsSection {
-        flex-basis: auto; 
+        flex-basis: auto;
         margin-top: 20px;
+    }
+}
+
+@media (max-width: 640px) {
+    #selectionSection .choice-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
     }
 }
 
 @media (max-width: 600px) {
     header h1 {
-        font-size: 1.5em;
+        font-size: 24px;
     }
 
     main {
-        margin: 10px;
-        padding: 10px;
+        margin: 20px 10px;
+        padding: 18px;
     }
 
-    section, aside#testDetailsSection {
-        padding: 15px;
-    }
-
-    input[type="number"], input[type="text"] {
-        padding: 8px;
-    }
-
-    #selectionSection .choice-row {
-        gap: 10px 16px;
-    }
-
-    .choice-group {
-        flex: 1 1 100%;
+    section {
+        padding: 18px;
     }
 
     .choice-btn {
-        flex: 1;
+        min-height: 52px;
+    }
+
+    input[type="number"], input[type="text"] {
+        padding: 11px 14px;
     }
 
     .discount-input-container {
-        flex-direction: column; 
+        flex-direction: column;
         align-items: flex-start;
     }
 
     .discount-input-container input[type="number"] {
-        width: 100%; 
+        width: 100%;
         max-width: none;
+    }
+
+    .summary-actions {
+        flex-direction: column;
+    }
+
+    .summary-actions button {
+        width: 100%;
     }
 }
