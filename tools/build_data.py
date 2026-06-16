@@ -92,7 +92,9 @@ def build_ramat_hahayal(path):
     for r in ws.iter_rows(min_row=5, values_only=True):
         if all(c is None for c in r):
             continue
-        code = clean(r[2])  # col C = קוד תפנית
+        # col C = קוד תפנית. Some cells are multi-line ("4540\nאיסוף שתן-45201") — key by the
+        # first line only so the detail matches its numeric price code (otherwise it's orphaned).
+        code = clean(r[2]).split("\n")[0].strip()
         if not code or code in details:  # first occurrence wins
             continue
         details[code] = {k: clean(r[i - 1]) for k, i in RH_FIELDS.items()}
